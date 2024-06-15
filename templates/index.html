@@ -1,0 +1,27 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+{% block content %}
+<h1>Vente Semences de Porcs</h1>
+<div class="row">
+    {% for pig in pig_types %}
+   <!-- Example card for each pig type -->
+<div class="col-xl-6 col-lg-6">
+    <div class="card-style-5 mb-30">
+        <div class="card-image">
+            <a href="#0">
+                <img src="{{ url_for('static', filename='assets/images/pigs/' ~ pig.name|lower ~ '.jpeg') }}" alt="{{ pig.name }}" />
+            </a>
+        </div>
+        <div class="card-content">
+            <h4><a href="#0">{{ pig.name }}</a></h4>
+            <p>{{pig.price}}</p>
+            <p>{{ pig.description }}</p>
+            
+            <a href="{{ url_for('order', pig_type_id=pig.id) }}" class="main-btn primary-btn btn-hover">Order Now</a>
+        </div>
+    </div>
+</div>
+    <!-- end col -->
+    {% endfor %}
+</div>
+{% endblock %}

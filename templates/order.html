@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.css') }}">
+    <!-- Include other necessary CSS files -->
+</head>
+<body>
+    {% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card-style mb-30">
+                    <h6 class="mb-25">Order Form</h6>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="input-style-1">
+                            {{ form.customer_name.label }}
+                            {{ form.customer_name(class_='form-control', placeholder='Full Name') }}
+                        </div>
+                        <div class="input-style-1">
+                            {{ form.customer_email.label }}
+                            {{ form.customer_email(class_='form-control', placeholder='Email') }}
+                        </div>
+                        <div class="input-style-1">
+                            {{ form.customer_address.label }}
+                            {{ form.customer_address(class_='form-control', placeholder='Address') }}
+                        </div>
+                        <div class="input-style-1">
+                            {{ form.customer_phone.label }}
+                            {{ form.customer_phone(class_='form-control', placeholder='Phone Number') }}
+                        </div>
+                        <div class="input-style-1">
+                            <label>{{ form.pig_type.label }}</label>
+                            {{ form.pig_type(class_='form-control', disabled=selected_pig_type is not none) }}
+                            {% if selected_pig_type %}
+                                <input type="hidden" name="pig_type" value="{{ selected_pig_type }}">
+                            {% endif %}
+                        </div>
+                        <div class="input-style-1">
+                            {{ form.quantity.label }}
+                            {{ form.quantity(class_='form-control', placeholder='Quantity') }}
+                        </div>
+                        <div>
+                            <button type="submit" class="main-btn primary-btn btn-hover">Order Now</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+</html>

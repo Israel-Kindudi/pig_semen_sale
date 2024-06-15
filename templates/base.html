@@ -1,0 +1,38 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vente de semences Des porcs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- ========== All CSS files linkup ========= -->
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/bootstrap.min.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/lineicons.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/materialdesignicons.min.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static',filename='assets/css/fullcalendar.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='assets/css/main.css')}}" />
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('order') }}">Order</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('admin') }}">Admin</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Admin Login</a>
+            {% endif %}
+        </nav>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
