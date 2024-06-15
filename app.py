@@ -11,22 +11,47 @@ from auth import auth_bp
 from io import BytesIO
 from weasyprint import HTML
 from flask_bcrypt import Bcrypt
+from flask_wtf.csrf import CSRFProtect
 #from auth import auth_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'login'
 #app.register_blueprint(auth_bp)
 bcrypt = Bcrypt(app)
-
+csrf = CSRFProtect(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    print("Login route triggered")  # Debug statement
+    if current_user.is_authenticated:
+        print("User is already authenticated, redirecting to index")  # Debug statement
+        return redirect(url_for('index'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        print("Form validated")  # Debug statement
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            print(f"Redirecting to: {next_page or 'admin_dashboard' if user.is_admin else 'index'}")  # Debug statement
+            return redirect(next_page) if next_page else redirect(url_for('admin_dashboard') if user.is_admin else url_for('index'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    else:
+        print("Form not validated")  # Debug statement
+        for fieldName, errorMessages in form.errors.items():
+            for err in errorMessages:
+                print(f"Error in {fieldName}: {err}")  # Debug statement
+    return render_template('login.html', form=form)
 
-@app.route('/')
-def index():
+@app.route('/pigs')
+def presentation():
     pig_types = PigType.query.all()
     return render_template('index.html', pig_types=pig_types)
 
@@ -91,13 +116,28 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember.data)
-            return redirect(url_for('admin_dashboard') if user.is_admin else url_for('index'))
-        else:
-            flash('Login Unsuccessful. Please check email a
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+@app.route('/')
+def index():
+    return render_template('presentation.html')
+
+@app.route('/admin_dashboard')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        return redirect(url_for('index'))
+    return render_template('admin.html')
+
+if __name__ == '__main__':
+   # with app.app_context():
+    #    db.create_all()
+        # Create an admin user (run this once)
+     #   if not User.query.filter_by(username='admin').first():
+     #       admin_user = User(username='admin', email='admin@example.com')
+     #       admin_user.set_password('adminpass')
+     #       db.session.add(admin_user)
+     #       db.session.commit()
+    app.run(debug=True,host="172.16.0.103")

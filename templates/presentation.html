@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Choose FarmWise</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+    
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.header {
+    background-color: #333;
+    padding: 10px 20px;
+    color: #fff;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-logo {
+    font-size: 1.5em;
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-left: 20px;
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+.hero {
+    background: url('{{ url_for('static', filename='assets/images/farm-hero.jpg') }}') no-repeat center center/cover;
+    color: #fff;
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.hero-content {
+    max-width: 600px;
+    margin: auto;
+}
+
+.benefits, .why-choose-us {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.benefits h2, .why-choose-us h2 {
+    margin-bottom: 40px;
+}
+
+.benefits-cards, .reasons-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    padding: 20px;
+    width: calc(33.333% - 40px);
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .nav-item {
+        margin: 10px 0;
+    }
+
+    .hero-content {
+        padding: 20px;
+    }
+
+    .card {
+        width: calc(50% - 40px);
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: calc(100% - 40px);
+    }
+}
+
+    </style>
+</head>
+<body>
+    
+    <header class="header">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="nav-logo">FarmWise</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Accueil</a></li>
+                <li class="nav-item"><a href="{{ url_for('presentation') }}" class="nav-link">Pourquoi Nous Choisir</a></li>
+                
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item"><a href="{{ url_for('admin_dashboard') }}" class="nav-link">Tableau de Bord</a></li>
+                    <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Déconnexion</a></li>
+                {% else %}
+                <li class="nav-item"><a href="{{ url_for('presentation') }}" class="nav-link">Commander</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Bienvenue chez FarmWise</h1>
+            <p>Découvrez les avantages de l'insémination artificielle et pourquoi FarmWise est le meilleur choix pour votre ferme.</p>
+        </div>
+    </section>
+
+    <section class="benefits">
+        <div class="container">
+            <h2>Les Avantages de l'Insémination Artificielle</h2>
+            <div class="benefits-cards">
+                <div class="card">
+                    <h3>Amélioration Génétique</h3>
+                    <p>L'insémination artificielle vous permet de sélectionner des génétiques supérieures, améliorant la qualité globale de votre bétail.</p>
+                </div>
+                <div class="card">
+                    <h3>Rentable</h3>
+                    <p>Réduisez le besoin de maintenir un grand nombre de mâles reproducteurs, ce qui abaisse vos coûts opérationnels.</p>
+                </div>
+                <div class="card">
+                    <h3>Reproduction Contrôlée</h3>
+                    <p>Planifiez les reproductions pour maximiser l'efficacité et gérer la reproduction du troupeau plus efficacement.</p>
+                </div>
+                <div class="card">
+                    <h3>Animaux Plus Sains</h3>
+                    <p>Diminuez la propagation des maladies en utilisant du sperme de haute qualité, testé et contrôlé.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="why-choose-us">
+        <div class="container">
+            <h2>Pourquoi Choisir FarmWise?</h2>
+            <div class="reasons-cards">
+                <div class="card">
+                    <h3>Assurance Qualité</h3>
+                    <p>Nos tests rigoureux et notre contrôle de qualité garantissent que vous recevez le meilleur sperme pour votre bétail.</p>
+                </div>
+                <div class="card">
+                    <h3>Soutien d'Experts</h3>
+                    <p>Notre équipe d'experts est disponible pour fournir des conseils et un soutien pour tous vos besoins de reproduction.</p>
+                </div>
+                <div class="card">
+                    <h3>Technologie Avancée</h3>
+                    <p>Nous utilisons les dernières technologies pour augmenter le taux de réussite de l'insémination artificielle.</p>
+                </div>
+                <div class="card">
+                    <h3>Satisfaction Client</h3>
+                    <p>Nous nous engageons à fournir un excellent service client et à assurer votre satisfaction.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 FarmWise. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

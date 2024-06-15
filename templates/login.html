@@ -1,17 +1,40 @@
-<!-- templates/login.html -->
 {% extends "base.html" %}
-{% block content %}
-<h1>Login</h1>
-<form method="POST" action="{{ url_for('login') }}">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.username.label }}<br>
-        {{ form.username(size=32) }}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}
-    </p>
-    <p><input type="submit" value="Login"></p>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.css') }}">
+<body>
+    {% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card-style mb-30">
+    <h2>Login</h2>
+    
+    <form method="POST" action="{{ url_for('login') }}">
+        {{ form.hidden_tag() }}
+        <div class="input-style-1">
+            {{ form.email.label }} {{ form.email() }}<br>
+        </div>
+        <div class="input-style-1" >
+            {{ form.username.label }} {{ form.username() }}<br>
+        </div>
+        <div class="input-style-1">
+            {{ form.password.label }} {{ form.password() }}<br>
+        </div>
+        <div class="input-style-1">
+            {{ form.remember() }} {{ form.remember.label }}<br>
+        </div>
+        <div class="input-style-1">
+            {{ form.submit() }}
+        </div>
+    </form>
+                </div>
+                </div>
+                </div>
+    {% endblock %}
+</body>
+</html>
