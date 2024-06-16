@@ -140,4 +140,4 @@ if __name__ == '__main__':
      #       admin_user.set_password('adminpass')
      #       db.session.add(admin_user)
      #       db.session.commit()
-    app.run(debug=True,host="172.16.0.103")
+    app.run(debug=True)
