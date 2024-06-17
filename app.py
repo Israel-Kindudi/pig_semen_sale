@@ -13,6 +13,7 @@ from weasyprint import HTML
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
 #from auth import auth_bp
+from utils import generate_unique_order_id
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -68,8 +69,9 @@ def order():
     if form.validate_on_submit():
         selected_pig = PigType.query.get(form.pig_type.data)
         total_price = form.quantity.data * selected_pig.price
-
+        order_id = generate_unique_order_id()
         order = Order(
+            order_id=order_id,
             customer_name=form.customer_name.data,
             customer_email=form.customer_email.data,
             customer_address=form.customer_address.data,

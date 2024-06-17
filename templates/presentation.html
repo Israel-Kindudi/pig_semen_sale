@@ -157,7 +157,7 @@ body {
                 <li class="nav-item"><a href="{{ url_for('presentation') }}" class="nav-link">Pourquoi Nous Choisir</a></li>
                 
                 {% if current_user.is_authenticated %}
-                    <li class="nav-item"><a href="{{ url_for('admin_dashboard') }}" class="nav-link">Tableau de Bord</a></li>
+                    <li class="nav-item"><a href="{{ url_for('admin') }}" class="nav-link">Tableau de Bord</a></li>
                     <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Déconnexion</a></li>
                 {% else %}
                 <li class="nav-item"><a href="{{ url_for('presentation') }}" class="nav-link">Commander</a></li>

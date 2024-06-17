@@ -19,6 +19,7 @@ class PigType(db.Model):
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, unique=True, nullable=False)
     customer_name = db.Column(db.String(100), nullable=False)
     customer_email = db.Column(db.String(100), nullable=False)
     customer_address = db.Column(db.String(200), nullable=False)
