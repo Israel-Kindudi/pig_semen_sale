@@ -2,59 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        .invoice-wrapper {
             padding: 20px;
+            border: 1px solid #ddd;
+            margin: 20px auto;
+            max-width: 800px;
         }
-        .invoice-header, .invoice-footer {
-            text-align: center;
+        .invoice-header, .invoice-address, .invoice-table, .invoice-total {
+            margin-bottom: 20px;
         }
-        .invoice-body {
-            margin-top: 20px;
+        .invoice-header h2, .invoice-header p, .invoice-address h5, .invoice-address h1, .invoice-address p {
+            margin: 0;
         }
-        .invoice-body table {
-            width: 100%;
-            border-collapse: collapse;
+        .invoice-total {
+            text-align: right;
         }
-        .invoice-body table, .invoice-body th, .invoice-body td {
-            border: 1px solid black;
-        }
-        .invoice-body th, .invoice-body td {
-            padding: 8px;
-            text-align: left;
+        .invoice-total h4 {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="invoice-header">
-        <h2>Invoice</h2>
-        <p>Order ID: {{ order.id }}</p>
-        <p>Date: {{ order.timestamp.strftime('%Y-%m-%d') }}</p>
-    </div>
-    <div class="invoice-body">
-        <p><strong>Customer Details:</strong></p>
-        <p>Name: {{ order.customer_name }}</p>
-        <p>Email: {{ order.customer_email }}</p>
-        <p>Address: {{ order.customer_address }}</p>
-        <p>Phone: {{ order.customer_phone }}</p>
-        <p><strong>Order Details:</strong></p>
-        <table>
-            <tr>
-                <th>Pig Type</th>
-                <th>Quantity</th>
-                <th>Total Price</th>
-            </tr>
-            <tr>
-                <td>{{ order.pig_type.name }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>${{ order.total_price }}</td>
-            </tr>
-        </table>
-    </div>
-    <div class="invoice-footer">
-        <p>Thank you for your purchase!</p>
+    <div class="invoice-wrapper">
+        <div class="invoice-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="invoice-for">
+                        <h2 class="mb-10">Invoice</h2>
+                        <p class="text-sm">
+                            FarmWise - Pig Semen Sales
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right">
+                    <div class="invoice-logo">
+                        <img src="{{ url_for('static', filename='assets/images/invoice/uideck-logo.svg') }}" alt="Logo" />
+                    </div>
+                    <div class="invoice-date">
+                        <p><span>Date Issued:</span> {{ order.timestamp.strftime('%Y-%m-%d') }}</p>
+                        <p><span>Order ID:</span> {{ order.id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="invoice-address">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="address-item">
+                        <h5 class="text-bold">From</h5>
+                        <h1>FarmWise</h1>
+                        <p class="text-sm">
+                            3891 Ranchview Dr. Richardson, California 62639
+                        </p>
+                        <p class="text-sm">
+                            <span class="text-medium">Email:</span>
+                            admin@farmwise.com
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right">
+                    <div class="address-item">
+                        <h5 class="text-bold">To</h5>
+                        <h1>{{ order.customer_name }}</h1>
+                        <p class="text-sm">{{ order.customer_address }}</p>
+                        <p class="text-sm">
+                            <span class="text-medium">Email:</span>
+                            {{ order.customer_email }}
+                        </p>
+                        <p class="text-sm">
+                            <span class="text-medium">Phone:</span>
+                            {{ order.customer_phone }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="invoice-table table">
+                <thead>
+                    <tr>
+                        <th>Pig Type</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.pig_type_ref.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.quantity * item.pig_type_ref.price }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="2" class="text-right"><strong>Total</strong></td>
+                        <td><strong>${{ order.total_price }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="note-wrapper warning-alert py-4 px-sm-3 px-lg-5">
+            <div class="alert">
+                <h5 class="text-bold mb-15">Notes:</h5>
+                <p class="text-sm text-gray">
+                    All accounts are to be paid within 7 days from receipt of invoice. To be paid by cheque or credit card or direct payment online. If account is not paid within 7 days the credit details supplied as confirmation of work undertaken will be charged the agreed quoted fee noted above.
+                </p>
+            </div>
+        </div>
+        <div class="invoice-action">
+            <ul class="d-flex flex-wrap align-items-center justify-content-center">
+                <li class="m-2">
+                    <a href="{{ url_for('invoice_download', order_id=order.id) }}" class="main-btn primary-btn-outline btn-hover">
+                        Download Invoice
+                    </a>
+                </li>
+                <li class="m-2">
+                    <a href="#" class="main-btn primary-btn btn-hover">
+                        Send Invoice
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </body>
 </html>

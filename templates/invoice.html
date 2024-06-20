@@ -1,139 +1,119 @@
 <!-- templates/invoice.html -->
 {% extends "base.html" %}
 {% block content %}
-<div class="invoice-wrapper">
-    <div class="row">
-        <div class="col-12">
-            <div class="invoice-card card-style mb-30">
-                <div class="invoice-header">
-                    <div class="invoice-for">
-                        <h2 class="mb-10">Invoice</h2>
-                        <p class="text-sm">
-                            Pig Semen Purchase
-                        </p>
+<div class="container">
+    <div class="invoice-wrapper">
+        <div class="row">
+            <div class="col-12">
+                <div class="invoice-card card-style mb-30">
+                    <div class="invoice-header">
+                        <div class="invoice-for">
+                            <h2 class="mb-10">Invoice</h2>
+                            <p class="text-sm">
+                                Details of your order
+                            </p>
+                        </div>
+                        <div class="invoice-logo">
+                            <img src="{{ url_for('static', filename='images/invoice-logo.png') }}" alt="Logo" />
+                        </div>
+                        <div class="invoice-date">
+                            <p><span>Date Issued:</span> {{ order.timestamp.strftime('%Y-%m-%d') }}</p>
+                            
+                            <p><span>Order ID:</span> {{ order.items.order_id }}</p>
+                        </div>
                     </div>
-                    <div class="invoice-logo">
-                        <img src="{{ url_for('static', filename='images/invoice-logo.svg') }}" alt="Logo" />
+                    <div class="invoice-address">
+                        <div class="address-item">
+                            <h5 class="text-bold">To</h5>
+                            <h1>{{ order.customer_name }}</h1>
+                            <p class="text-sm">{{ order.customer_address }}</p>
+                            <p class="text-sm">
+                                <span class="text-medium">Email:</span>
+                                {{ order.customer_email }}
+                            </p>
+                            <p class="text-sm">
+                                <span class="text-medium">Phone:</span>
+                                {{ order.customer_phone }}
+                            </p>
+                        </div>
                     </div>
-                    <div class="invoice-date">
-                        <p><span>Date Issued:</span> {{ order.timestamp.strftime('%d/%m/%Y') }}</p>
-                        <p><span>Order ID:</span> #{{ order.order_id }}</p>
+                    <div class="table-responsive">
+                        <table class="invoice-table table">
+                            <thead>
+                                <tr>
+                                    <th class="service">
+                                        <h6 class="text-sm text-medium">Pig Type</h6>
+                                    </th>
+                                    <th class="desc">
+                                        <h6 class="text-sm text-medium">Description</h6>
+                                    </th>
+                                    <th class="qty">
+                                        <h6 class="text-sm text-medium">Qty</h6>
+                                    </th>
+                                    <th class="amount">
+                                        <h6 class="text-sm text-medium">Amount</h6>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items %}
+                                    <tr>
+                                        <td>
+                                            <p class="text-sm">{{ item.pig_type_ref.name }}</p>
+                                        </td>
+                                        <td>
+                                            <p class="text-sm">{{ item.pig_type_ref.description }}</p>
+                                        </td>
+                                        <td>
+                                            <p class="text-sm">{{ item.quantity }}</p>
+                                        </td>
+                                        <td>
+                                            <p class="text-sm">{{ item.price * item.quantity }}</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <h6 class="text-sm text-medium">Total</h6>
+                                    </td>
+                                    <td>
+                                        <h6 class="text-sm text-bold">{{ order.total_price }}</h6>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="invoice-address">
-                    <div class="address-item">
-                        <h5 class="text-bold">From</h5>
-                        <h1>Farm Name</h1>
-                        <p class="text-sm">
-                            Farm Address Line 1<br>
-                            Farm Address Line 2<br>
-                            Farm City, State, ZIP
-                        </p>
-                        <p class="text-sm">
-                            <span class="text-medium">Email:</span>
-                            farm@example.com
-                        </p>
-                        <p class="text-sm">
-                            <span class="text-medium">Phone:</span>
-                            (123) 456-7890
-                        </p>
+                    <div class="note-wrapper warning-alert py-4 px-sm-3 px-lg-5">
+                        <div class="alert">
+                            <h5 class="text-bold mb-15">Notes:</h5>
+                            <p class="text-sm text-gray">
+                                All accounts are to be paid within 7 days from receipt of invoice. To be paid by cheque or credit card or direct payment online. If account is not paid within 7 days, the credit details supplied as confirmation of work undertaken will be charged the agreed quoted fee noted above.
+                            </p>
+                        </div>
                     </div>
-                    <div class="address-item">
-                        <h5 class="text-bold">To</h5>
-                        <h1>{{ order.customer_name }}</h1>
-                        <p class="text-sm">
-                            {{ order.customer_address }}
-                        </p>
-                        <p class="text-sm">
-                            <span class="text-medium">Email:</span>
-                            {{ order.customer_email }}
-                        </p>
-                        <p class="text-sm">
-                            <span class="text-medium">Phone:</span>
-                            {{ order.customer_phone }}
-                        </p>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="invoice-table table">
-                        <thead>
-                            <tr>
-                                <th class="service">
-                                    <h6 class="text-sm text-medium">Service</h6>
-                                </th>
-                                <th class="desc">
-                                    <h6 class="text-sm text-medium">Descriptions</h6>
-                                </th>
-                                <th class="qty">
-                                    <h6 class="text-sm text-medium">Qty</h6>
-                                </th>
-                                <th class="amount">
-                                    <h6 class="text-sm text-medium">Amounts</h6>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <p class="text-sm">{{ order.pig_type.name }}</p>
-                                </td>
-                                <td>
-                                    <p class="text-sm">Pig semen of {{ order.pig_type.name }}</p>
-                                </td>
-                                <td>
-                                    <p class="text-sm">{{ order.quantity }}</p>
-                                </td>
-                                <td>
-                                    <p class="text-sm">${{ order.total_price }}</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <h6 class="text-sm text-medium">Subtotal</h6>
-                                </td>
-                                <td>
-                                    <h6 class="text-sm text-bold">${{ order.total_price }}</h6>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <h4>Total</h4>
-                                </td>
-                                <td>
-                                    <h4>${{ order.total_price }}</h4>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="note-wrapper warning-alert py-4 px-sm-3 px-lg-5">
-                    <div class="alert">
-                        <h5 class="text-bold mb-15">Notes:</h5>
-                        <p class="text-sm text-gray">
-                            All accounts are to be paid within 7 days from receipt of invoice. To be paid by cheque or credit card or direct payment online. If account is not paid within 7 days the credit details supplied as confirmation of work undertaken will be charged the agreed quoted fee noted above.
-                        </p>
+                    <div class="invoice-action">
+                        <ul class="d-flex flex-wrap align-items-center justify-content-center">
+                            <li class="m-2">
+                                <a href="{{ url_for('invoice_download', order_id=order.id) }}" class="main-btn primary-btn-outline btn-hover">
+                                    Download Invoice
+                                </a>
+                            </li>
+                            <li class="m-2">
+                                <a href="#0" class="main-btn primary-btn btn-hover">
+                                    Send Invoice
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="invoice-action">
-                    <ul class="d-flex flex-wrap align-items-center justify-content-center">
-                        <li class="m-2">
-                            <a href="{{ url_for('invoice_download', order_id=order.id) }}" class="main-btn primary-btn-outline btn-hover">Download Invoice</a>
-                        </li>
-                        <li class="m-2">
-                            <a href="#0" class="main-btn primary-btn btn-hover">Send Invoice</a>
-                        </li>
-                    </ul>
-                </div>
+                <!-- End Card -->
             </div>
-            <!-- End Card -->
+            <!-- End Col -->
         </div>
-        <!-- End Col -->
+        <!-- End Row -->
     </div>
-    <!-- End Row -->
+    <!-- Invoice Wrapper End -->
 </div>
-<!-- Invoice Wrapper End -->
 {% endblock %}

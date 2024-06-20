@@ -1,11 +1,12 @@
 # app.py
-from flask import Flask, render_template, url_for, flash, redirect, request,send_file
+import os
+from flask import Flask, render_template, url_for, flash, redirect, request,send_file,current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
 from forms import LoginForm
 from flask_login import login_user, logout_user, login_required
 from config import Config
-from models import db, PigType, Order, User
+from models import db, PigType, Order, User,OrderItem
 from forms import OrderForm, RegistrationForm
 from auth import auth_bp
 from io import BytesIO
@@ -14,7 +15,7 @@ from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
 #from auth import auth_bp
 from utils import generate_unique_order_id
-
+from datetime import datetime
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
@@ -60,33 +61,36 @@ def presentation():
 def order():
     form = OrderForm()
     pig_types = PigType.query.all()
-    form.pig_type.choices = [(pig.id, pig.name) for pig in pig_types]
-
-    pig_type_id = request.args.get('pig_type_id', type=int)
-    if pig_type_id:
-        form.pig_type.data = pig_type_id
+    pig_type_choices = [{'name': pig.name} for pig in pig_types]
 
     if form.validate_on_submit():
-        selected_pig = PigType.query.get(form.pig_type.data)
-        total_price = form.quantity.data * selected_pig.price
         order_id = generate_unique_order_id()
         order = Order(
-            order_id=order_id,
             customer_name=form.customer_name.data,
             customer_email=form.customer_email.data,
             customer_address=form.customer_address.data,
             customer_phone=form.customer_phone.data,
-            pig_type_id=form.pig_type.data,
-            quantity=form.quantity.data,
-            total_price=total_price,
+            total_price=0,
+            
         )
+        total_price = 0
+        for item_form in form.items.entries:
+            pig_type = PigType.query.filter_by(name=item_form.pig_type.data).first()
+            if pig_type:
+                order_item = OrderItem(
+                    order_id=order_id,
+                    pig_type_ref=pig_type,
+                    quantity=item_form.quantity.data,
+                    price=pig_type.price,
+                    
+                )
+                order.items.append(order_item)
+                total_price += pig_type.price * item_form.quantity.data
+        order.total_price = total_price
         db.session.add(order)
         db.session.commit()
-        flash('Your order has been placed!', 'success')
-        return redirect(url_for('invoice', order_id=order.id))
-
-    return render_template('order.html', form=form)
-
+        return redirect(url_for('invoice', order_id=order_item.order_id))
+    return render_template('order.html', form=form, pig_types=pig_type_choices)
     
 @app.route('/invoice/<int:order_id>')
 def invoice(order_id):
@@ -95,11 +99,28 @@ def invoice(order_id):
 @app.route('/invoice/<int:order_id>/download')
 def invoice_download(order_id):
     order = Order.query.get_or_404(order_id)
-    html = render_template('invoice_pdf.html', order=order)
-    pdf = HTML(string=html).write_pdf()
-    response = BytesIO(pdf)
-    response.seek(0)
-    return send_file(response, as_attachment=True, download_name=f'invoice_{order_id}.pdf')
+
+    # Render the invoice template to HTML
+    rendered_html = render_template('invoice_pdf.html', order=order)
+
+    # Generate PDF
+    pdf = HTML(string=rendered_html).write_pdf()
+
+    # Define a filename for the PDF
+    filename = f'invoice_{order.id}.pdf'
+
+    # Define the path to save the PDF
+    save_path = os.path.join(current_app.root_path, 'invoices', filename)
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
+    # Save the PDF to the specified path
+    with open(save_path, 'wb') as f:
+        f.write(pdf)
+
+    # Send the file to the client
+    return send_file(save_path, as_attachment=True, download_name=filename)
 
 @app.route('/admin')
 @login_required

@@ -6,52 +6,94 @@
     <title>Order</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.css') }}">
     <!-- Include other necessary CSS files -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
     {% extends "base.html" %}
-{% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card-style mb-30">
-                    <h6 class="mb-25">Order Form</h6>
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
-                        <div class="input-style-1">
-                            {{ form.customer_name.label }}
-                            {{ form.customer_name(class_='form-control', placeholder='Full Name') }}
-                        </div>
-                        <div class="input-style-1">
-                            {{ form.customer_email.label }}
-                            {{ form.customer_email(class_='form-control', placeholder='Email') }}
-                        </div>
-                        <div class="input-style-1">
-                            {{ form.customer_address.label }}
-                            {{ form.customer_address(class_='form-control', placeholder='Address') }}
-                        </div>
-                        <div class="input-style-1">
-                            {{ form.customer_phone.label }}
-                            {{ form.customer_phone(class_='form-control', placeholder='Phone Number') }}
-                        </div>
-                        <div class="input-style-1">
-                            <label>{{ form.pig_type.label }}</label>
-                            {{ form.pig_type(class_='form-control', disabled=selected_pig_type is not none) }}
-                            {% if selected_pig_type %}
-                                <input type="hidden" name="pig_type" value="{{ selected_pig_type }}">
-                            {% endif %}
-                        </div>
-                        <div class="input-style-1">
-                            {{ form.quantity.label }}
-                            {{ form.quantity(class_='form-control', placeholder='Quantity') }}
-                        </div>
-                        <div>
-                            <button type="submit" class="main-btn primary-btn btn-hover">Commander</button>
-                        </div>
-                    </form>
+
+{% block content %}  <div class="container">
+    <h1>Place an Order</h1>
+    <form method="POST" action="{{ url_for('order') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.customer_name.label(class="form-label") }}
+            {{ form.customer_name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.customer_email.label(class="form-label") }}
+            {{ form.customer_email(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.customer_address.label(class="form-label") }}
+            {{ form.customer_address(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.customer_phone.label(class="form-label") }}
+            {{ form.customer_phone(class="form-control") }}
+        </div>
+        <h3>Pig Orders</h3>
+        <div id="pig-orders">
+            {% for item in form.items %}
+            <div class="card mb-3 pig-order-card">
+                <div class="card-body">
+                    <div class="form-group">
+                        {{ item.pig_type.label }}
+                        {{ item.pig_type(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ item.quantity.label(class="form-label") }}
+                        {{ item.quantity(class="form-control") }}
+                    </div>
+                    <button type="button" class="btn btn-danger remove-order-btn">Remove</button>
                 </div>
             </div>
+            {% endfor %}
         </div>
-    </div>
+        <button type="button" class="btn btn-secondary" id="add-order-btn">Add Another Order</button>
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let orderIndex = {{ form.items|length }};
+        const pigTypes = {{ pig_types|tojson }};
+        
+        function addOrderForm() {
+            let newOrder = `
+                <div class="card mb-3 pig-order-card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="items-${orderIndex}-pig_type">Pig Type</label>
+                            <select name="items-${orderIndex}-pig_type" class="form-control" id="items-${orderIndex}-pig_type">
+                                ${pigTypes.map(type => `<option value="${type.name}">${type.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="items-${orderIndex}-quantity">Quantity</label>
+                            <input type="number" name="items-${orderIndex}-quantity" class="form-control" id="items-${orderIndex}-quantity">
+                        </div>
+                        <button type="button" class="btn btn-danger remove-order-btn">Remove</button>
+                    </div>
+                </div>`;
+            $('#pig-orders').append(newOrder);
+            orderIndex++;
+        }
+
+        $('#add-order-btn').click(function() {
+            addOrderForm();
+        });
+
+        $(document).on('click', '.remove-order-btn', function() {
+            $(this).closest('.pig-order-card').remove();
+        });
+    });
+</script>
 </body>
 {% endblock %}
 </html>

@@ -11,7 +11,10 @@ with app.app_context():
             PigType(name="Duroc", description="Croissance", price=54.0),
             PigType(name="Landracs", description="Capacité à sevrer", price=82.0),
             PigType(name="Large White", description="qualité du porcelet", price=82.0),
-            PigType(name="Thor", description="Vigueur à la naissance", price=38.0)
+            PigType(name="Thor", description="Vigueur à la naissance", price=38.0),
+            PigType(name="Regumate", description="Regumate Porcine 0.4%",price=40.0),
+            PigType(name="Tube", description="Ce cathéter jetable est spécialement utilisé pour l'insémination artificielle pour le porc",price=1),
+            PigType(name="Glacière",description="Glacière électrique portable",price=140)
         ]
         db.session.bulk_save_objects(pig_types)
         db.session.commit()
